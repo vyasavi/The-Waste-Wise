@@ -100,16 +100,16 @@ The app will open in your browser at `http://localhost:8501`.
 
 ```
 The-Waste-Wise/
-├── demo.py               # Streamlit app + prediction logic
-├── Untitled12.ipynb      # Data generation + model training notebook
-├── new_file.csv          # Generated training dataset
-├── workfile              # Serialized trained model (pickle)
-├── website1.html         # Static landing page
-├── styles.css            # Landing page styles
-├── script.js             # Landing page scripts
-├── screen.png            # App screenshot
-├── back.jpg              # Background image
-├── icon.png              # App icon
+├── demo.py                                 # Streamlit app + prediction logic
+├── data_generation_and_training.ipynb      # Data generation + model training notebook
+├── new_file.csv                            # Generated training dataset
+├── workfile                                # Serialized trained model (pickle)
+├── website1.html                           # Static landing page
+├── styles.css                              # Landing page styles
+├── script.js                               # Landing page scripts
+├── screen.png                              # App screenshot
+├── back.jpg                                # Background image
+├── icon.png                                # App icon
 └── logo-no-background.png
 ```
 
