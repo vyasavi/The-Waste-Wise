@@ -39,7 +39,7 @@ Given three economic inputs — inflation rate, disposable income, and month of 
 
 ## How It Works
 
-**1. Data Generation (`Untitled12.ipynb`)**
+**1. Data Generation (`data_generation_and_training.ipynb`)**
 
 Synthetic economic data is generated for every month from 1960 to 2022 (756 rows). Each row includes:
 - Production volume (1M–3M units)
