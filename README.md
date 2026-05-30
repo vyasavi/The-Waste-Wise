@@ -1,5 +1,5 @@
-# The Waste Wise 🏆
-### 3rd Place — HackWesTX 2023
+# The Waste Wise 
+### 3rd Place 🏆 HackWesTX 2023
 
 A machine learning web app that predicts manufacturing sales from economic inputs and generates per-unit resource consumption estimates, helping manufacturers reduce waste across raw materials, packaging, and energy.
 
