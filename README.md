@@ -19,9 +19,9 @@ Given three economic inputs — inflation rate, disposable income, and month of 
 
 ---
 
-## Demo
+## Demo Link
 
-![App Screenshot](screen.png)
+https://the-waste-wise.streamlit.app/
 
 ---
 
