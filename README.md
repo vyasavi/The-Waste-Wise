@@ -48,16 +48,22 @@ Synthetic economic data is generated for every month from 1960 to 2022 (756 rows
 - Seasonal demand modifiers (higher sales in May–Aug and December)
 - Derived resource consumption values (fixed ratios of production)
 
-**2. Model Training**
+**2. Model Training (`train_model.py`)**
 
-A Linear Regression model is trained on three normalized features:
+The model is a scikit-learn `Pipeline` (`OneHotEncoder` → `LinearRegression`)
+trained on three features:
 - `Inflation`
 - `Disposable Income`
-- `Month of the Year`
+- `Month of the Year` — **one-hot encoded** (12 categories)
 
 Target variable: `Sold` (units sold)
 
-Features are normalized using `StandardScaler` before training.
+Month is treated as categorical rather than a single numeric term, so the model
+learns a distinct effect per month and can capture the seasonal demand peaks
+(May–Aug and December). The encoding lives inside the pipeline, so training and
+inference share the exact same feature preparation — no scaler or separate
+encoder to keep in sync. Running `python train_model.py` regenerates the
+serialized model (`workfile`).
 
 **3. Prediction & Waste Estimation (`demo.py`)**
 
@@ -76,13 +82,17 @@ The trained model predicts sales for user-provided inputs. Resource consumption 
 
 ### Prerequisites
 
+Python 3.9–3.12 (the pinned `scikit-learn==1.3.2` has no wheels for 3.13).
+
 ```bash
-pip install streamlit pandas scikit-learn flask flask-cors
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### Run the App
 
 ```bash
+python train_model.py   # (optional) regenerate the model from data
 streamlit run demo.py
 ```
 
@@ -90,9 +100,14 @@ The app will open in your browser at `http://localhost:8501`.
 
 ### Usage
 
-1. Upload a CSV file with columns: `Inflation`, `Disposable Income`, `Month of the Year`, `Sold`
-2. Enter current economic inputs in the sidebar
-3. Click **Predict Sales** to see forecasted units and resource estimates
+1. Enter economic inputs — inflation, disposable income, and month
+2. The forecast, resource estimates, and seasonal-demand chart update live
+3. Optionally upload a CSV (`Inflation`, `Disposable Income`, `Month of the Year`, `Sold`) to preview your own data
+
+### Deploying to Streamlit Community Cloud
+
+Point the app at `demo.py` and set the **Python version to 3.12** in the app's
+advanced settings so the pinned dependencies install from wheels.
 
 ---
 
@@ -100,15 +115,14 @@ The app will open in your browser at `http://localhost:8501`.
 
 ```
 The-Waste-Wise/
-├── demo.py                                 # Streamlit app + prediction logic
-├── data_generation_and_training.ipynb      # Data generation + model training notebook
+├── demo.py                                 # Streamlit app (landing + predictor)
+├── train_model.py                          # Trains LinearRegression -> workfile
+├── data_generation_and_training.ipynb      # Synthetic data generation notebook
 ├── new_file.csv                            # Generated training dataset
 ├── workfile                                # Serialized trained model (pickle)
-├── website1.html                           # Static landing page
-├── styles.css                              # Landing page styles
-├── script.js                               # Landing page scripts
-├── screen.png                              # App screenshot
-├── back.jpg                                # Background image
+├── requirements.txt                        # Pinned dependencies
+├── .streamlit/config.toml                  # App theme
+├── screen.png                              # CSV-format screenshot
 ├── icon.png                                # App icon
 └── logo-no-background.png
 ```
