@@ -204,13 +204,38 @@ st.altair_chart(chart, use_container_width=True)
 st.caption("Forecast demand across the year at your current inflation and income levels.")
 
 # ---------------------------------------------------------------------------
-# Optional: bring your own data
+# Batch forecast: score every row of an uploaded CSV
 # ---------------------------------------------------------------------------
-with st.expander("Have your own data? Preview the expected CSV format"):
-    st.image("screen.png", caption="Your CSV should follow this layout")
+REQUIRED_COLS = ["Inflation", "Disposable Income", "Month of the Year"]
+
+with st.expander("Have your own data? Upload a CSV to forecast every row"):
+    st.caption(
+        f"CSV must include the columns: {', '.join(REQUIRED_COLS)}. "
+        "Inflation is a fraction (e.g. 0.03 for 3%)."
+    )
+    st.image("screen.png", caption="Expected CSV layout")
     uploaded_file = st.file_uploader("Upload CSV file", type=["csv"])
     if uploaded_file is not None:
-        st.dataframe(pd.read_csv(uploaded_file).head(), use_container_width=True)
+        data = pd.read_csv(uploaded_file)
+        missing = [c for c in REQUIRED_COLS if c not in data.columns]
+        if missing:
+            st.error(f"Missing required column(s): {', '.join(missing)}")
+        else:
+            preds = copy_of_model.predict(data[REQUIRED_COLS])
+            out = data.copy()
+            out["Predicted units"] = preds.round().astype(int)
+            out["Raw material (kg)"] = (out["Predicted units"] * 0.142).round().astype(int)
+            out["Packaging (kg)"] = (out["Predicted units"] * 0.028).round().astype(int)
+            out["Energy (kWh)"] = (out["Predicted units"] * 0.3).round().astype(int)
+            out["Transport (bags)"] = (out["Predicted units"] * 0.025).round().astype(int)
+            st.success(f"Scored {len(out):,} rows.")
+            st.dataframe(out, use_container_width=True)
+            st.download_button(
+                "Download predictions",
+                out.to_csv(index=False),
+                file_name="waste_wise_predictions.csv",
+                mime="text/csv",
+            )
 
 # ---------------------------------------------------------------------------
 # Footer

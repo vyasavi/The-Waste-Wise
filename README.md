@@ -30,7 +30,7 @@ https://the-waste-wise.streamlit.app/
 | Layer | Tools |
 |-------|-------|
 | Frontend / UI | Streamlit |
-| ML Model | scikit-learn (LinearRegression, StandardScaler) |
+| ML Model | scikit-learn Pipeline (OneHotEncoder, StandardScaler, LinearRegression) |
 | Data Processing | pandas |
 | Model Serialization | pickle |
 | Data Generation | Python (random, pandas) |
@@ -50,24 +50,29 @@ Synthetic economic data is generated for every month from 1960 to 2022 (756 rows
 
 **2. Model Training (`train_model.py`)**
 
-The model is a scikit-learn `Pipeline` (`OneHotEncoder` → `LinearRegression`)
-trained on three features:
-- `Inflation`
-- `Disposable Income`
+The model is a scikit-learn `Pipeline` (`OneHotEncoder` + `StandardScaler` →
+`LinearRegression`) trained on three features:
+- `Inflation` — standardized
+- `Disposable Income` — standardized
 - `Month of the Year` — **one-hot encoded** (12 categories)
 
 Target variable: `Sold` (units sold)
 
 Month is treated as categorical rather than a single numeric term, so the model
 learns a distinct effect per month and can capture the seasonal demand peaks
-(May–Aug and December). The encoding lives inside the pipeline, so training and
-inference share the exact same feature preparation — no scaler or separate
-encoder to keep in sync. Running `python train_model.py` regenerates the
-serialized model (`workfile`).
+(May–Aug and December). The economic features are standardized so the linear
+coefficients are comparable and interpretable, and the model is fit without an
+intercept (`fit_intercept=False`) so the 12 month dummies stay full-rank and the
+coefficients are unique. All preprocessing lives inside the pipeline, so training
+and inference share the exact same feature preparation. Running
+`python train_model.py` regenerates the serialized model (`workfile`).
 
 **3. Prediction & Waste Estimation (`demo.py`)**
 
-The trained model predicts sales for user-provided inputs. Resource consumption is estimated using fixed per-unit ratios:
+The trained model predicts sales for the economic inputs entered in the app, and a
+seasonal-demand chart shows the forecast across all 12 months. You can also upload a
+CSV to score every row in bulk and download the predictions. Resource consumption is
+estimated using fixed per-unit ratios:
 
 | Resource | Ratio |
 |----------|-------|
@@ -102,7 +107,7 @@ The app will open in your browser at `http://localhost:8501`.
 
 1. Enter economic inputs — inflation, disposable income, and month
 2. The forecast, resource estimates, and seasonal-demand chart update live
-3. Optionally upload a CSV (`Inflation`, `Disposable Income`, `Month of the Year`, `Sold`) to preview your own data
+3. Optionally upload a CSV (`Inflation`, `Disposable Income`, `Month of the Year`) to forecast every row in bulk and download the predictions
 
 ### Deploying to Streamlit Community Cloud
 
