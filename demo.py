@@ -243,8 +243,7 @@ with st.expander("Have your own data? Upload a CSV to forecast every row"):
 st.markdown(
     """
     <div class="footer">
-        806-451-2463 &nbsp;·&nbsp; wastewise@gmail.com &nbsp;·&nbsp;
-        2500 Broadway W, Lubbock, TX 79409
+        The Waste Wise · Demand forecasting for manufacturers
     </div>
     """,
     unsafe_allow_html=True,
